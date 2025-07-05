@@ -1,0 +1,100 @@
+CREATE DATABASE RetailDB;
+USE RetailDB;
+
+-- 2. Create the Products, Customers, and Transactions tables
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY AUTO_INCREMENT,
+    ProductName VARCHAR(100),
+    Category VARCHAR(50),
+    Price DECIMAL(10, 2)
+);
+
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerName VARCHAR(100),
+    Email VARCHAR(100)
+);
+
+CREATE TABLE Transactions (
+    TransactionID INT PRIMARY KEY AUTO_INCREMENT,
+    CustomerID INT,
+    ProductID INT,
+    TransactionDate DATE,
+    Quantity INT,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+-- 3. Insert at least 3 products and 3 customers
+INSERT INTO Products (ProductName, Category, Price) VALUES
+('Wireless Mouse', 'Electronics', 25.99),
+('USB Keyboard', 'Electronics', 45.00),
+('HDMI Cable', 'Accessories', 15.50),
+('Almond Milk', 'Food', 350.00),
+('Green Tea', 'Beverages', 180.00);
+
+INSERT INTO Customers (CustomerName, Email) VALUES
+('Alice Johnson', 'alice@example.com'),
+('Bob Smith', 'bob@example.com'),
+('Charlie Davis', 'charlie@example.com');
+
+-- Example Transactions
+INSERT INTO Transactions (CustomerID, ProductID, TransactionDate, Quantity) VALUES
+(1, 1, '2025-06-01', 2),
+(2, 4, '2025-06-02', 4),
+(3, 2, '2025-06-03', 1),
+(1, 5, '2025-06-04', 3),
+(2, 3, '2025-06-05', 5);
+
+-- 4. Update the price of one of the products
+UPDATE Products
+SET Price = 29.99
+WHERE ProductID = 1;
+
+-- Comparison Operators
+-- List all products with a UnitPrice greater than 300.
+SELECT * FROM Products WHERE Price > 300;
+
+-- Find customers whose CustomerID is not equal to 2 or 4.
+SELECT * FROM Customers WHERE CustomerID NOT IN (2, 4);
+
+-- Show transactions where Quantity is between 2 and 5.
+SELECT * FROM Transactions WHERE Quantity BETWEEN 2 AND 5;
+
+-- Select products where Category IN ('Food', 'Beverages').
+SELECT * FROM Products WHERE Category IN ('Food', 'Beverages');
+
+-- List transactions where ProductID is NOT IN (3, 5).
+SELECT * FROM Transactions WHERE ProductID NOT IN (3, 5);
+
+-- Find products where ProductName LIKE '%Milk%'.
+SELECT * FROM Products WHERE ProductName LIKE '%Milk%';
+
+-- Show customers where Email IS NOT NULL.
+SELECT * FROM Customers WHERE Email IS NOT NULL;
+
+-- Aggregate Functions
+-- Count the total number of transactions.
+SELECT COUNT(*) AS TotalTransactions FROM Transactions;
+
+-- Calculate the sum of Quantity sold across all transactions.
+SELECT SUM(Quantity) AS TotalQuantitySold FROM Transactions;
+
+-- Find the average UnitPrice of all products.
+SELECT AVG(Price) AS AverageUnitPrice FROM Products;
+
+-- Identify the minimum and maximum UnitPrice in the Products table.
+SELECT MIN(Price) AS MinPrice, MAX(Price) AS MaxPrice FROM Products;
+
+-- Count the number of distinct customers who have made purchases.
+SELECT COUNT(DISTINCT CustomerID) AS DistinctCustomers FROM Transactions;
+
+-- Logical Operators
+-- Find transactions where Quantity > 1 AND ProductID = 1.
+SELECT * FROM Transactions WHERE Quantity > 1 AND ProductID = 1;
+
+-- List products that are in Category = 'Food' OR have UnitPrice < 200.
+SELECT * FROM Products WHERE Category = 'Food' OR Price < 200;
+
+-- Show transactions where NOT (Quantity < 3).
+SELECT * FROM Transactions WHERE NOT (Quantity < 3);
