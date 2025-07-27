@@ -1,0 +1,99 @@
+-- Create Books Table
+CREATE TABLE Books (
+    BookID INT PRIMARY KEY,
+    Title VARCHAR(100) NOT NULL,
+    Author VARCHAR(100) NOT NULL,
+    Genre VARCHAR(50) NOT NULL,
+    CopiesAvailable INT DEFAULT 1 CHECK (CopiesAvailable >= 0)
+);
+
+-- Create Members Table
+CREATE TABLE Members (
+    MemberID INT PRIMARY KEY,
+    MemberName VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL
+);
+
+-- Create Loans Table
+CREATE TABLE Loans (
+    LoanID INT PRIMARY KEY,
+    MemberID INT NOT NULL,
+    BookID INT NOT NULL,
+    LoanDate DATE DEFAULT CURRENT_DATE NOT NULL,
+    ReturnDate DATE,
+    FOREIGN KEY (MemberID) REFERENCES Members(MemberID),
+    FOREIGN KEY (BookID) REFERENCES Books(BookID)
+);
+-- Insert into Books
+INSERT INTO Books VALUES 
+(1, '1984', 'George Orwell', 'Fiction', 3),
+(2, 'The Hobbit', 'J.R.R. Tolkien', 'Fantasy', 5),
+(3, 'Clean Code', 'Robert C. Martin', 'Programming', 2),
+(4, 'To Kill a Mockingbird', 'Harper Lee', 'Fiction', 4),
+(5, 'Atomic Habits', 'James Clear', 'Self-help', 6);
+
+-- Insert into Members
+INSERT INTO Members VALUES 
+(1, 'Alice Smith', 'alice@example.com'),
+(2, 'Bob Johnson', 'bob@example.com'),
+(3, 'Carol White', 'carol@example.com'),
+(4, 'David Black', 'david@example.com');
+
+-- Insert into Loans
+INSERT INTO Loans (LoanID, MemberID, BookID, LoanDate, ReturnDate) VALUES
+(1, 1, 1, '2025-07-01', NULL),
+(2, 1, 2, '2025-07-02', '2025-07-08'),
+(3, 2, 1, '2025-07-03', NULL),
+(4, 2, 3, '2025-07-04', '2025-07-07'),
+(5, 3, 2, '2025-07-02', '2025-07-06'),
+(6, 3, 4, '2025-07-03', NULL),
+(7, 3, 5, '2025-07-04', NULL),
+(8, 4, 5, '2025-07-04', '2025-07-07'),
+(9, 4, 3, '2025-07-04', NULL),
+(10, 1, 5, '2025-07-04', NULL);
+-- INSERT a new book
+INSERT INTO Books (BookID, Title, Author, Genre, CopiesAvailable) 
+VALUES (6, 'The Pragmatic Programmer', 'Andrew Hunt', 'Programming', 2);
+
+-- SELECT all books
+SELECT * FROM Books;
+
+-- UPDATE CopiesAvailable for a specific BookID
+UPDATE Books SET CopiesAvailable = 7 WHERE BookID = 5;
+
+-- DELETE one book by BookID
+DELETE FROM Books WHERE BookID = 6;
+-- SELECT all Fiction books ordered by Title ascending
+SELECT * FROM Books 
+WHERE Genre = 'Fiction' 
+ORDER BY Title ASC;
+-- COUNT total loans per book
+SELECT BookID, COUNT(*) AS TotalLoans
+FROM Loans
+GROUP BY BookID;
+
+-- AVG CopiesAvailable across all books
+SELECT AVG(CopiesAvailable) AS AverageCopies
+FROM Books;
+SELECT M.MemberName, COUNT(*) AS ActiveLoans
+FROM Members M
+JOIN Loans L ON M.MemberID = L.MemberID
+WHERE L.ReturnDate IS NULL
+GROUP BY M.MemberName;
+SELECT M.MemberName, COUNT(*) AS ActiveLoans
+FROM Members M
+JOIN Loans L ON M.MemberID = L.MemberID
+WHERE L.ReturnDate IS NULL
+GROUP BY M.MemberName
+HAVING COUNT(*) > 2;
++------------------+          +------------------+          +---------------------+
+|     Members      |          |      Loans       |          |       Books         |
++------------------+          +------------------+          +---------------------+
+| PK  MemberID     |<--------<| PK  LoanID       | >-------->| PK  BookID          |
+|     MemberName   |          | FK  MemberID     |          |     Title           |
+|     Email        |          | FK  BookID       |          |     Author          |
+|                  |          |     LoanDate     |          |     Genre           |
+|                  |          |     ReturnDate   |          |     CopiesAvailable |
++------------------+          +------------------+          +---------------------+
+       1                          *          *                          1
+
